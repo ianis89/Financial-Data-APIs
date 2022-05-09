@@ -1,5 +1,5 @@
-from stock.stock import Stock
-from exceptions import StockNotFound
+from my_finance.stock.stock import Stock
+from my_finance.exceptions import StockNotFound, CannotAddStock
 
 
 class StockRepository:
@@ -8,7 +8,6 @@ class StockRepository:
 
     @staticmethod
     def add(new_stock: Stock):
-        StockRepository.stocks[new_stock.ticker] = new_stock
         stock_info = {
             "ticker": new_stock.ticker,
             "company": new_stock.company,
@@ -19,11 +18,15 @@ class StockRepository:
             "country": new_stock.country,
             "numberOfEmployees": new_stock.number_of_employees,
         }
-        StockRepository.persistance.add(stock_info)
+        try:
+            StockRepository.persistance.add(stock_info)
+        except Exception as e:
+            raise CannotAddStock("Could not add stock. Reason: " + str(e))
+        StockRepository.stocks[new_stock.ticker] = new_stock
 
     @staticmethod
     def get_all() -> list[Stock]:
-        print ([s.price for s in StockRepository.stocks.values()])
+        print([s.price for s in StockRepository.stocks.values()])
         return list(StockRepository.stocks.values())
 
     # if we do not have the stock, we can raise an error or return None
@@ -45,8 +48,14 @@ class StockRepository:
         items = StockRepository.persistance.get_all()
         # items = list of dictionaries from the file
         for one_item in items:
-            new_stock = Stock(one_item["ticker"], one_item["field"],
-                              one_item["country"], one_item["numberOfEmployees"], one_item["amount"])
+            new_stock = Stock(
+                one_item["ticker"],
+                one_item["company"],
+                one_item["field"],
+                one_item["country"],
+                one_item["numberOfEmployees"],
+                one_item["amount"],
+            )
             if "longSummary" in one_item and "exchange" in one_item:
                 new_stock.set_long_summary(one_item["longSummary"])
                 new_stock.set_exchange(one_item["exchange"])

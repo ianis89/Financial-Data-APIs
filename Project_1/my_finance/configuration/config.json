@@ -2,6 +2,6 @@
   "number_of_items_per_page": 3,
   "database": {
     "type": "sql",
-    "path": "database\\stocks.db"
+    "path": "my_finance\\database\\stocks.db"
   }
 }

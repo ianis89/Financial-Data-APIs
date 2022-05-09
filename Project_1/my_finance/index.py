@@ -2,7 +2,7 @@
 # webpage for fastapi framework https://fastapi.tiangolo.com/tutorial/,
 # also https://realpython.com/fastapi-python-web-apis/
 
-# uvicorn index:app --reload --port 7777
+#  uvicorn my_finance.index:app --reload --port 7777
 # uvicorn is the server which will start
 # index:app, index -> the file name, app -> the FastAPI object name
 # --reload -> the server will restart when we modify the code
@@ -14,15 +14,14 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi_utils.tasks import repeat_every
 
-from stock.stock_repo import StockRepository
-from configuration.config import Configuration
-from database.stock_file_persistance import StockFilePersistance
-from database.stock_sql_persistance import StockSqlPersistance
-from exceptions import StockNotFound
-from api.stocks import stocks_router
-from api.health import health_router
-from api.diagrams import diagrams_router
-
+from my_finance.stock.stock_repo import StockRepository
+from my_finance.configuration.config import Configuration
+from my_finance.database.stock_file_persistance import StockFilePersistance
+from my_finance.database.stock_sql_persistance import StockSqlPersistance
+from my_finance.exceptions import StockNotFound
+from my_finance.api.stocks import stocks_router
+from my_finance.api.health import health_router
+from my_finance.api.diagrams import diagrams_router
 
 app = FastAPI(
     title="Name of our app",  # TODO for homework, name your application
@@ -55,11 +54,6 @@ def load_list_of_items():
     logging.info("Loading stocks from database ...")
     stock_repo.load()
     logging.info("Successfully loaded stocks from database.")
-    tickers = stock_repo.stocks.keys()
-    for a_ticker in tickers:
-        yf_ticker = yfinance.Ticker(a_ticker)
-        price = yf_ticker.info["currentPrice"]
-        stock_repo.stocks[a_ticker].set_price(price)
 
 
 @app.on_event("startup")
@@ -82,3 +76,6 @@ def update_prices():
 @app.exception_handler(StockNotFound)
 def handle_stock_not_found(exception, request):
     return JSONResponse(content="The stock you requested was not saved in our app!", status_code=404)
+
+
+

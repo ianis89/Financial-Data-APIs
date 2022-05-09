@@ -1,7 +1,8 @@
 import yfinance
 
-from models import StockModel
-from stock.stock import Stock
+# imports are done from the file which starts the app
+from my_finance.models import StockModel
+from my_finance.stock.stock import Stock
 
 
 class StockFactory:
